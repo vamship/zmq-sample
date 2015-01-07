@@ -1,0 +1,45 @@
+{
+  "name": "zmq-sample",
+  "version": "1.0.0",
+  "description": "Sample application that demonstrates the use of the simple queue (currently deployed on AWS)",
+  "main": "app.js",
+  "dependencies": {
+    "q": "^1.1.2",
+    "uuid": "^2.0.1",
+    "yargs": "^1.3.3",
+    "zmq": "^2.8.0",
+    "zmq-lib": "git+https://github.com/vamship/zmq-lib.git"
+  },
+  "devDependencies": {
+    "zmq": "^2.8.0"
+  },
+  "scripts": {
+    "ppq": "app/paranoid-pirate-queue.js",
+    "siq": "app/simple-queue.js",
+    "siw": "app/simple-worker.js",
+    "ppw": "app/paranoid-pirate-worker.js",
+    "lpc": "app/lazy-pirate-client.js"
+  },
+  "bin": {
+    "zs-ppq": "app/paranoid-pirate-queue.js",
+    "zs-siq": "app/simple-queue.js",
+    "zs-siw": "app/simple-worker.js",
+    "zs-ppw": "app/paranoid-pirate-worker.js",
+    "zs-lpc": "app/lazy-pirate-client.js"
+  },
+  "author": "Vamshi K Ponnapalli <vamshi.ponnapalli@gmail.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vamship/zmq-sample.git"
+  },
+  "keywords": [
+    "zeromq",
+    "paranoid pirate",
+    "lazy pirate"
+  ],
+  "bugs": {
+    "url": "https://github.com/vamship/zmq-sample/issues"
+  },
+  "homepage": "https://github.com/vamship/zmq-sample"
+}
