@@ -42,6 +42,8 @@ var _args = require('yargs')
                 .default('silent', false)
                 .describe('silent', 'Run in silent mode (no console output)')
 
+                .usage('$0 [options]')
+                .help('help')
                 .argv;
 
 var SEPARATOR = (new Array(81)).join('-');
