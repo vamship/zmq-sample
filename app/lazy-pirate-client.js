@@ -23,6 +23,12 @@ var _args = require('yargs')
                 .default('message', '[' + _identifier + ']:: Hello!')
                 .describe('message', 'Message that the client will send')
 
+                // Client message count
+                .demand('message-count')
+                .alias('message-count', 'c')
+                .default('message-count', 1)
+                .describe('message-count', 'The number of messages that the client will send')
+
                 // Monitor frequency
                 .demand('monitor-frequency')
                 .alias('monitor-frequency', 'f')
@@ -63,8 +69,11 @@ function log() {
 
 var retryMonitor = new Monitor(_args['monitor-frequency'], _args['retry-count']);
 var client = new LazyPirateClient(_config.QueueFE, retryMonitor);
+var messageCount = _args['message-count'];
 
 client.on(EventDefinitions.READY, function() {
+    messageCount--;
+    log('sending message: ', _args.message);
     client.send(_args.message);
 });
 
@@ -75,6 +84,12 @@ client.on(EventDefinitions.RESPONSE, function() {
     log('Client received response: ');
     log('\t Message    :  ' + frames[0].toString());
     log(SEPARATOR);
+
+    if(messageCount > 0) {
+        messageCount--;
+        log('sending message: ', _args.message);
+        client.send(_args.message);
+    }
 });
 client.initialize();
 
