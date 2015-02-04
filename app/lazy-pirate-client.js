@@ -6,6 +6,7 @@ var _uuid = require('uuid');
 var Monitor = require('zmq-lib').Monitor;
 var LazyPirateClient = require('zmq-lib').LazyPirateClient;
 var EventDefinitions = require('zmq-lib').EventDefinitions;
+var MessageDefinitions = require('zmq-lib').MessageDefinitions;
 
 var _config = require('./config');
 var _identifier = 'LPC_' + _uuid.v4();
@@ -20,7 +21,7 @@ var _args = require('yargs')
                 // Client message
                 .demand('message')
                 .alias('message', 'm')
-                .default('message', '[' + _identifier + ']:: Hello!')
+                .default('message', '{' + _identifier + '} Hello!')
                 .describe('message', 'Message that the client will send')
 
                 // Client message count
@@ -68,16 +69,24 @@ function log() {
 }
 
 var retryMonitor = new Monitor(_args['monitor-frequency'], _args['retry-count']);
-var client = new LazyPirateClient(_config.QueueFE, retryMonitor);
-var messageCount = _args['message-count'];
+var _client = new LazyPirateClient(_config.QueueFE, retryMonitor);
+var _messageIndex = 1;
+var _maxMessages = _args['message-count'];
 
-client.on(EventDefinitions.READY, function() {
-    messageCount--;
-    log('sending message: ', _args.message);
-    client.send(_args.message);
+function _sendMessage() {
+    if(_messageIndex <= _maxMessages) {
+        var message =  _args.message + ' (' +  _messageIndex.toString() + ')';
+        log('sending message: ', message);
+        _client.send([ MessageDefinitions.REQUEST, 'SVC', message ]);
+        _messageIndex++;
+    }
+}
+
+_client.on(EventDefinitions.READY, function() {
+    _sendMessage();
 });
 
-client.on(EventDefinitions.RESPONSE, function() {
+_client.on(EventDefinitions.RESPONSE, function() {
     var frames = Array.prototype.splice.call(arguments, 0);
 
     log(SEPARATOR);
@@ -85,18 +94,15 @@ client.on(EventDefinitions.RESPONSE, function() {
     log('\t Message    :  ' + frames[0].toString());
     log(SEPARATOR);
 
-    if(messageCount > 0) {
-        messageCount--;
-        log('sending message: ', _args.message);
-        client.send(_args.message);
-    }
+    _sendMessage();
 });
-client.initialize();
+
+_client.initialize();
 
 if(_args['die'] > 0) {
     setTimeout(function() {
         log('Shutting down client' );
-        client.dispose();
+        _client.dispose();
         log('Exiting');
     }, _args['die']);
     log('Client started - auto terminate in ' +  _args['die'] + 'ms');

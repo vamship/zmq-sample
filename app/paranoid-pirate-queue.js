@@ -28,6 +28,12 @@ var _args = require('yargs')
                 .default('worker-timeout', 3000)
                 .describe('worker-timeout', 'Worker timeout in milliseconds')
 
+                // Request timeout
+                .demand('request-timeout')
+                .alias('request-timeout', 'r')
+                .default('request-timeout', 6000)
+                .describe('request-timeout', 'Request timeout in milliseconds')
+
                 // Auto die parameter
                 .demand('die')
                 .alias('die', 'd')
@@ -57,7 +63,8 @@ function log() {
 
 var queue = new ParanoidPirateQueue(_config.QueueFE, _config.QueueBE, {
     pollFrequency: _args['monitor-frequency'],
-    workerTimeout: _args['worker-timeout']
+    workerTimeout: _args['worker-timeout'],
+    requestTimeout: _args['request-timeout']
 });
 
 queue.on(EventDefinitions.REQUEST, function() {

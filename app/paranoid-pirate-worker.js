@@ -62,10 +62,10 @@ var worker = new ParanoidPirateWorker(_config.QueueBE, retryMonitor);
 worker.on(EventDefinitions.REQUEST, function(frames) {
     log(SEPARATOR);
     log('Worker received message: ');
-    log('\t Client Id  :  ' + frames[0]);
-    log('\t Message    :  ' + frames[2].toString());
+    log('\t Client Id  :  ' + frames[2]);
+    log('\t Message    :  ' + frames[4].toString());
     log(SEPARATOR);
-    worker.send([ frames[0], frames[1], 'ECHO ' + frames[2].toString()]);
+    worker.send([ MessageDefinitions.RESPONSE, frames[2], frames[3], 'ECHO ' + frames[4].toString()]);
 });
 worker.initialize();
 
